@@ -1,0 +1,72 @@
+{
+	"version":"0",
+	"id":"abc12345-12ab-123b-12dc-abcd0f123f12",
+	"detail-type":"Security Hub Findings - Imported",
+	"source":"aws.securityhub",
+	"account":"123456789012",
+	"time":"2019-08-26T13:00:11Z",
+	"region":"us-east-1",
+	"resources":[
+		"arn:aws:securityhub:us-east-1::product/aws/guardduty/arn:aws:guardduty:us-east-1:123456789012:detector/c0b00123456789123456789ac242558e/finding/76b666ff91693ee10e86965531fe8c22"
+	],
+	"detail":{
+		"findings":[{
+			"SchemaVersion":"2018-10-08",
+			"Id":"arn:aws:guardduty:us-east-1:123456789012:detector/c0b00123456789123456789ac242558e/finding/abcde0012345ee10e12345531fe8c22",
+			"ProductArn":"arn:aws:securityhub:us-east-1::product/aws/guardduty",
+			"GeneratorId":"arn:aws:guardduty:us-east-1:123456789012:detector/c0b00123456789123456789ac242558e",
+			"AwsAccountId":"123456789012",
+			"Types":[
+				"TTPs/Defense Evasion/Stealth:IAMUser-CloudTrailLoggingDisabled"
+			],
+			"FirstObservedAt":"2019-08-26T12:44:48Z",
+			"LastObservedAt":"2019-08-26T12:45:09Z",
+			"CreatedAt":"2019-08-26T12:55:45.618Z",
+			"UpdatedAt":"2019-08-26T12:55:45.618Z",
+			"Severity":	{
+				"Product":2,
+				"Normalized":40
+			},
+			"Title":"AWS CloudTrail trail arn:aws:cloudtrail:us-east-1:123456789012:trail/test-trail was disabled.",
+			"Description":"AWS CloudTrail trail arn:aws:cloudtrail:us-east-1:123456789012:trail/test-trail was disabled by IsengardAdministrator calling StopLogging under unusual circumstances. This can be attackers attempt to cover their tracks by eliminating any trace of activity performed while they accessed your account.",
+			"ProductFields":{
+				"detectorId":"c0b00123456789123456789ac242558e",
+				"action/actionType":"AWS_API_CALL",
+				"action/awsApiCallAction/api":"StopLogging",
+				"action/awsApiCallAction/serviceName":"cloudtrail.amazonaws.com",
+				"action/awsApiCallAction/callerType":"Remote IP",
+				"action/awsApiCallAction/remoteIpDetails/ipAddressV4":"10.2.3.4",
+				"action/awsApiCallAction/remoteIpDetails/organization/asn":"16509",
+				"action/awsApiCallAction/remoteIpDetails/organization/asnOrg":"Amazon.com, Inc.",
+				"action/awsApiCallAction/remoteIpDetails/organization/isp":"Amazon Office",
+				"action/awsApiCallAction/remoteIpDetails/organization/org":"Amazon Office",
+				"action/awsApiCallAction/remoteIpDetails/country/countryName":"United States",
+				"action/awsApiCallAction/remoteIpDetails/city/cityName":"Ashburn",
+				"action/awsApiCallAction/remoteIpDetails/geoLocation/lat":"40.0123",
+				"action/awsApiCallAction/remoteIpDetails/geoLocation/lon":"-75.1234",
+				"action/awsApiCallAction/affectedResources/AWS::CloudTrail::Trail":"arn:aws:cloudtrail:us-east-1:123456789012:trail/test-trail",
+				"resourceRole":"TARGET",
+				"archived":"false",
+				"count":"2",
+				"aws/securityhub/FindingId":"arn:aws:securityhub:us-east-1::product/aws/guardduty/arn:aws:guardduty:us-east-1:123456789012:detector/c0b00123456789123456789ac242558e/finding/abcde0012345ee10e12345531fe8c22",
+				"aws/securityhub/SeverityLabel":"MEDIUM",
+				"aws/securityhub/ProductName":"GuardDuty",
+				"aws/securityhub/CompanyName":"Amazon"
+			},
+			"Resources":[{
+				"Type":"AwsIamAccessKey",
+				"Id":"AWS::IAM::AccessKey:ASIAABCDEABCDEABCDEF",
+				"Partition":"aws",
+				"Region":"us-east-1",
+				"Details":{
+					"AwsIamAccessKey":{
+						"UserName":"AccountAdmin"
+					}
+				}
+			}],
+			"RecordState":"ACTIVE",
+			"WorkflowState":"NEW",
+			"approximateArrivalTimestamp":1.566824407362E9
+		}]
+	}
+}
