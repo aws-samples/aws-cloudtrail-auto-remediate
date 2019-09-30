@@ -1,5 +1,6 @@
-## Sample `User Story
 *Version 0.1*
+
+## Sample User Story
 
 ### Name
 
