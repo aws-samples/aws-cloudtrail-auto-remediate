@@ -40,10 +40,10 @@ def enable_cloudtrail(trailname):
 
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         logger.info("Response on enable CloudTrail logging - %s" %response)
-        return True
     else:
         logger.error("Error enabling CloudTrail logging - %s" %response)
-        return False
+    
+    return response
 
 # Send notification via SNS
 def notify_admin(topic, description):
@@ -57,10 +57,10 @@ def notify_admin(topic, description):
 
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         logger.info("SNS notification sent successfully - %s" %response)
-        return True
     else:
         logger.error("Error sending SNS notification - %s" %response)
-        return False
+
+    return response
 
 
 # Lambda entry point
@@ -82,8 +82,9 @@ def handler(event, context):
     # Enabling the AWS CloudTrail logging
     try:
         response = enable_cloudtrail(trailARN)
-        if response == True:
-            notify_admin(snsARN, description)
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            message = str(description) + " Response - " + str(response) + "."
+            notify_admin(snsARN, message)
         else:
             logger.error("Something went wrong - %s, %s" % (response, event))
 
