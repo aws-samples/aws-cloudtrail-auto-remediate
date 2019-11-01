@@ -23,7 +23,7 @@ from botocore.exceptions import ClientError
 session = botocore.session.get_session()
 
 # Configure lgging
-logging.basicConfig(level=logging.INFO)
+logger.basicConfig(level=logging.INFO)
 logger=logging.getLogger(__name__)
 
 # Get the SNS Topic ARN passed in by the environment variable
