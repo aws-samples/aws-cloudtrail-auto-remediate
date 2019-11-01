@@ -33,6 +33,7 @@ snsARN = os.environ['SNSTOPIC']
 # The function automatically re-enables AWS CloudTrail logging 
 # and publishes a notification to an SNS Topic.
 
+
 # Enable CloudTrail logging
 def enable_cloudtrail(trailname):
     client = boto3.client('cloudtrail')
@@ -44,6 +45,7 @@ def enable_cloudtrail(trailname):
         logger.error("Error enabling CloudTrail logging - %s" %response)
     
     return response
+
 
 # Send notification via SNS
 def notify_admin(topic, description):
