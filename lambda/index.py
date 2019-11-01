@@ -69,7 +69,7 @@ def notify_admin(topic, description):
 def handler(event, context):
 
     # Consider setting logging to DEBUG - this function should be rarely invoked, but carefully logged
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
     # extract trail ARN by parsing the incoming Security Hub finding (in JSON format)
     trailARN = event['detail']['findings'][0]['ProductFields']['action/awsApiCallAction/affectedResources/AWS::CloudTrail::Trail']
