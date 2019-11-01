@@ -23,8 +23,8 @@ from botocore.exceptions import ClientError
 session = botocore.session.get_session()
 
 # Configure lgging
-logger.basicConfig(level=logging.INFO)
 logger=logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # Get the SNS Topic ARN passed in by the environment variable
 snsARN = os.environ['SNSTOPIC']
@@ -68,6 +68,12 @@ def notify_admin(topic, description):
 # Lambda entry point
 def handler(event, context):
 
+    # Consider setting logging to DEBUG - this function should be rarely invoked, but carefully logged
+    logger.setLevel(logging.INFO)
+
+    # log the start of the remediation response
+    logger.info("Starting automatic CloudTrail remediation response")
+
     # extract trail ARN by parsing the incoming Security Hub finding (in JSON format)
     trailARN = event['detail']['findings'][0]['ProductFields']['action/awsApiCallAction/affectedResources/AWS::CloudTrail::Trail']
     
@@ -85,6 +91,7 @@ def handler(event, context):
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             message = str(description) + " Response - " + str(response) + "."
             notify_admin(snsARN, message)
+            logger.info("Completed automatic CloudTrail remediation response")
         else:
             logger.error("Something went wrong - %s, %s" % (response, event))
 
