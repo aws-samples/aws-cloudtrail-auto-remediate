@@ -22,7 +22,7 @@ import botocore.session
 from botocore.exceptions import ClientError
 session = botocore.session.get_session()
 
-# Consider setting logging to DEBUG - this function should be rarely invoked, but carefully logged
+# Configure lgging
 logging.basicConfig(level=logging.INFO)
 logger=logging.getLogger(__name__)
 
@@ -66,6 +66,7 @@ def notify_admin(topic, description):
 # Lambda entry point
 def handler(event, context):
 
+    # Consider setting logging to DEBUG - this function should be rarely invoked, but carefully logged
     logger.setLevel(logging.DEBUG)
 
     # extract trail ARN by parsing the incoming Security Hub finding (in JSON format)
