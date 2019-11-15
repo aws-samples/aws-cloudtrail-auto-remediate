@@ -12,7 +12,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# Description: Lambda function that restarts CloudTrail logging and sends a notification.
+# Description: Lambda function that restarts CloudTrail if logging and sends a notification in response to Security Hub Security Hub IAMUser-CloudTrailLoggingDisabled.
 #
 
 import boto3
@@ -24,7 +24,7 @@ session = botocore.session.get_session()
 
 # Configure lgging
 logger=logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 # Get the SNS Topic ARN passed in by the environment variable
 snsARN = os.environ['SNSTOPIC']
@@ -34,15 +34,29 @@ snsARN = os.environ['SNSTOPIC']
 # and publishes a notification to an SNS Topic.
 
 
+# Get CloudTrail logging Status
+def get_cloudtrail_status(trailname):
+    client = boto3.client('cloudtrail')
+    response = client.get_trail_status(Name=trailname)
+
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        response = response['IsLogging']
+        logger.info("Status of CloudTrail logging for %s - %s" % (trailname, response))
+    else:
+        logger.error("Error gettingCloudTrail logging status for %s - %s" % (trailname, response))
+    
+    return response
+
+
 # Enable CloudTrail logging
 def enable_cloudtrail(trailname):
     client = boto3.client('cloudtrail')
     response = client.start_logging(Name=trailname)
 
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        logger.info("Response on enable CloudTrail logging - %s" %response)
+        logger.info("Response on enable CloudTrail logging for %s - %s" % (trailname, response))
     else:
-        logger.error("Error enabling CloudTrail logging - %s" %response)
+        logger.error("Error enabling CloudTrail logging for %s - %s" % (trailname, response))
     
     return response
 
@@ -52,7 +66,7 @@ def notify_admin(topic, description):
     snsclient = boto3.client('sns')
     response = snsclient.publish(
         TargetArn = topic,
-        Message = "Automatically restarting CloudTrail logging. Event description: \"%s\" " %description,
+        Message = "CloudTrail logging state change detected. Event description: \"%s\" " %description,
         Subject = 'CloudTrail Logging Alert'
 
         )
@@ -69,7 +83,8 @@ def notify_admin(topic, description):
 def handler(event, context):
 
     # Consider setting logging to DEBUG - this function should be rarely invoked, but carefully logged
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
+    logger.debug("Event is-- %s" %event)
 
     # log the start of the remediation response
     logger.info("Starting automatic CloudTrail remediation response")
@@ -79,6 +94,7 @@ def handler(event, context):
     
     # description contains useful details to be sent to security operations
     description = event['detail']['findings'][0]['Description']
+    region = event['detail']['findings'][0]['Resources'][0]['Region']
 
     # If debug logging set, write out details to logs for better audit path
     logger.debug("Event is-- %s" %event)
@@ -88,12 +104,15 @@ def handler(event, context):
     # Enabling the AWS CloudTrail logging
     try:
         response = enable_cloudtrail(trailARN)
+        status = get_cloudtrail_status(trailARN)
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            message = str(description) + " Response - " + str(response) + "."
+            message = "CloudTrail logging status for trail - " + trailARN + ": " + str(status) + "\n \n" + str(description) + "\n \n" + \
+                    "Review additional information information in Security Hub - https://console.aws.amazon.com/securityhub/home?region=" + region + "#/findings"
             notify_admin(snsARN, message)
-            logger.info("Completed automatic CloudTrail remediation response")
+            logger.info("Completed automatic CloudTrail remediation response for %s - %s" % (trailARN, response))
+
         else:
-            logger.error("Something went wrong - %s, %s" % (response, event))
+            logger.error("Something went wrong - %s, %s" % (trailARN, event))
 
     except ClientError as e:
         logger.error("An error occured: %s" %e)
