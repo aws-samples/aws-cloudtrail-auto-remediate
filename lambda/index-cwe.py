@@ -66,7 +66,7 @@ def notify_admin(topic, description):
     snsclient = boto3.client('sns')
     response = snsclient.publish(
         TargetArn = topic,
-        Message = "Event description: \"%s\" " %description,
+        Message = "CloudTrail logging state change detected. Event description: \"%s\" " %description,
         Subject = 'CloudTrail Logging Alert'
 
         )
@@ -109,8 +109,12 @@ def handler(event, context):
                 notify_admin(snsARN, message)
                 logger.info("Completed automatic CloudTrail remediation response for %s - %s" % (trailARN, response))
         elif response == True:
-            logger.info("CloudTrail logging is already enabled for %s. Exiting" %trailARN)
+            message = "CloudTrail ARN - " + trailARN + "\n \n Event:" + str(description)
+            notify_admin(snsARN, message)
+            logger.info("CloudTrail logging is already enabled for %s." %trailARN)
         else:
+            message = "CloudTrail ARN - " + trailARN + "\n \n Event:" + str(description)
+            notify_admin(snsARN, message)
             logger.error("Something went wrong - %s, %s" % (trailARN, event))
 
     except ClientError as e:
