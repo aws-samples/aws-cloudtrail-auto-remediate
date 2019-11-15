@@ -109,7 +109,7 @@ def handler(event, context):
                 notify_admin(snsARN, message)
                 logger.info("Completed automatic CloudTrail remediation response for %s - %s" % (trailARN, response))
         elif response == True:
-            message = "CloudTrail logging is enabled for - " + trailARN + "\n \n Event:" + str(description)
+            message = "CloudTrail logging is already enabled for - " + trailARN + "\n \n Event:" + str(description)
             notify_admin(snsARN, message)
             logger.info("CloudTrail logging is already enabled for %s." %trailARN)
         else:
