@@ -24,7 +24,7 @@ session = botocore.session.get_session()
 
 # Configure lgging
 logger=logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 # Get the SNS Topic ARN passed in by the environment variable
 snsARN = os.environ['SNSTOPIC']
@@ -83,7 +83,7 @@ def notify_admin(topic, description):
 def handler(event, context):
 
     # Consider setting logging to DEBUG - this function should be rarely invoked, but carefully logged
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     logger.debug("Event is-- %s" %event)
 
     # log the start of the remediation response
