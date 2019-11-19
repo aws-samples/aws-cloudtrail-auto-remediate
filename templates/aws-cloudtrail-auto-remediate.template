@@ -141,7 +141,6 @@ Resources:
                       message = "CloudTrail ARN - " + trailARN + "\n \n Event:" + str(description)
                       notify_admin(snsARN, message)
                       logger.error("Something went wrong - Trail: %s, Event: %s, Response: %s" % (trailARN, event, response))
-                      
 
               except ClientError as e:
                   message = "%s \n \n %s" % (e, event)
