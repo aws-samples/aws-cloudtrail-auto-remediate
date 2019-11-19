@@ -37,20 +37,14 @@ snsARN = os.environ['SNSTOPIC']
 # Get CloudTrail logging Status
 def get_cloudtrail_status(trailname):
     client = boto3.client('cloudtrail')
+    response = client.get_trail_status(Name=trailname)
 
-    try:
-        response = client.get_trail_status(Name=trailname)
-
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            response = response['IsLogging']
-            logger.info("Status of CloudTrail logging for %s - %s" % (trailname, response))
-        else:
-            logger.error("Error gettingCloudTrail logging status for %s - %s" % (trailname, response))
-        
-    except ClientError as e:
-        logger.error("An error occured: %s" %e)
-        response = e
-        
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        response = response['IsLogging']
+        logger.info("Status of CloudTrail logging for %s - %s" % (trailname, response))
+    else:
+        logger.error("Error gettingCloudTrail logging status for %s - %s" % (trailname, response))
+    
     return response
 
 
@@ -121,4 +115,6 @@ def handler(event, context):
             logger.error("Something went wrong - %s, %s" % (trailARN, event))
 
     except ClientError as e:
-        logger.error("An error occured: %s" %e)
+        message = "%s \n \n %s" % (e, event)
+        logger.error("%s, %s" % (e, event))
+        notify_admin(snsARN, message)
