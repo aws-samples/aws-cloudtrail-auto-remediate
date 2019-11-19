@@ -1,6 +1,10 @@
 ## Automatically Enable CloudTrail when Disabled
 
-In this sample, we’ll show you how to deploy and test the CloudTrail logging remediation sample. Amazon GuardDuty generates the finding Stealth:IAMUser/CloudTrailLoggingDisabled when CloudTrail logging is disabled, and AWS Security Hub collects findings from GuardDuty using the standardized finding format mentioned earlier. We recommend that you deploy this sample into a non-production AWS account. 
+This example incorporates two automated responses: near real-time workflow and investigatory workflow.  The near real-time workflow prioritizes rapid response to an individual event, in this case stopping of a trail.  The goal is to restore the trail to functioning state and alert security responders as quickly as possible.  The investigatory workflow still includes a response to provide defense in depth, but it also incorporates services that facilitate a more in-depth investigation of the incident.
+
+---
+
+[diagram] (images/solution-diagram.png)
 
 ## License
 
