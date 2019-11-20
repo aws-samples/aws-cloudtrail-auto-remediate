@@ -87,25 +87,26 @@ def handler(event, context):
 
     # log the start of the remediation response
     logger.info("Starting automatic CloudTrail remediation response")
-
-    # extract trail ARN by parsing the incoming CloudTrail event (in JSON format)
-    trailARN = event['detail']['requestParameters']['name']
     
     # description contains useful details to be sent to security operations
     description = event['detail']
 
     # If debug logging set, write out details to logs for better audit path
     logger.debug("Event is-- %s" %event)
-    logger.debug("trailARN is--- %s" %trailARN)
     logger.debug("snsARN is-- %s" %snsARN)
        
     # Enabling the AWS CloudTrail logging
     try:
-        response = get_cloudtrail_status(trailARN)
+        response = None
+        # extract trail ARN by parsing the incoming CloudTrail event (in JSON format)
+        if 'name' in event['detail']['requestParameters']:
+            trailARN = event['detail']['requestParameters']['name']
+            response = get_cloudtrail_status(trailARN)
+            logger.debug("trailARN is--- %s" %trailARN)
         if response == False:
             response = enable_cloudtrail(trailARN)
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                message = "CloudTrail logging restarted automatically for trail - " + trailARN + "\n \n Event:" + str(description) + "\n \n Response:" + str(response) + "."
+                message = "CloudTrail logging restarted automatically for trail - " + trailARN + "\n \n Event:" + str(description)
                 notify_admin(snsARN, message)
                 logger.info("Completed automatic CloudTrail remediation response for %s - %s" % (trailARN, response))
         elif response == True:
@@ -113,9 +114,9 @@ def handler(event, context):
             notify_admin(snsARN, message)
             logger.info("CloudTrail logging is already enabled for %s." %trailARN)
         else:
-            message = "CloudTrail ARN - " + trailARN + "\n \n Event:" + str(description)
+            message = "Event:" + str(description)
             notify_admin(snsARN, message)
-            logger.error("Something went wrong - Trail: %s, Event: %s, Response: %s" % (trailARN, event, response))
+            logger.info("Event: %s, Response: %s" % (event, response))
 
     except ClientError as e:
         message = "%s \n \n %s" % (e, event)
