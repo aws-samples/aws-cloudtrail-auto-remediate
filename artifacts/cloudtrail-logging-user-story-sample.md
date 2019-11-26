@@ -12,10 +12,58 @@ CloudTrail logging should be enabled for all AWS accounts and regions. If CloudT
 
 ### Conditions of Satisfaction
 
-- A Security Hub finding is generated due to CloudTrail logging for a trail being disabled
+- An EventBridge Event and Security Hub finding is generated due to CloudTrail logging for a trail being disabled
 - A CloudWatch Event filter captures the finding and triggers a Lambda function to enable CloudTrail logging
 - A notification is sent to security operations team
 
+### EventBridge Rule
+
+Event Pattern
+
+```
+{
+  "detail-type": [
+    "AWS API Call via CloudTrail"
+  ],
+  "source": [
+    "aws.cloudtrail"
+  ],
+  "detail": {
+    "eventSource": [
+      "cloudtrail.amazonaws.com"
+    ],
+    "eventName": [
+      "StopLogging",
+      "DeleteTrail",
+      "UpdateTrail",
+      "RemoveTags",
+      "AddTags",
+      "PutEventSelectors"
+    ]
+  }
+}
+```
+
 ### Security Hub Findings
 
-TTPs/Defense Evasion/Stealth:IAMUser-CloudTrailLoggingDisabled
+Event Pattern
+
+```
+	{
+  "detail-type": [
+    "Security Hub Findings - Imported"
+  ],
+  "source": [
+    "aws.securityhub"
+  ],
+  "detail": {
+    "findings": {
+      "Types": [
+        "TTPs/Defense Evasion/Stealth:IAMUser-CloudTrailLoggingDisabled"
+      ]
+    }
+  }
+}
+```
+
+
