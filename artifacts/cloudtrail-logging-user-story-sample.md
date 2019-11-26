@@ -18,7 +18,7 @@ CloudTrail logging should be enabled for all AWS accounts and regions. If CloudT
 
 ### EventBridge Rule
 
-Event Pattern
+Event Pattern:
 
 ```
 {
@@ -46,10 +46,10 @@ Event Pattern
 
 ### Security Hub Findings
 
-Event Pattern
+Event Pattern:
 
 ```
-	{
+{
   "detail-type": [
     "Security Hub Findings - Imported"
   ],
